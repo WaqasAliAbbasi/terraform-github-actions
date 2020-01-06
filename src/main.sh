@@ -51,6 +51,38 @@ function parseInputs {
   if [ "${INPUT_TF_ACTIONS_CLI_CREDENTIALS_TOKEN}" != "" ]; then
     tfCLICredentialsToken=${INPUT_TF_ACTIONS_CLI_CREDENTIALS_TOKEN}
   fi
+
+  sshPublicKey=""
+  if [ "${INPUT_SSH_PUBLIC_KEY}" != "" ]; then
+    sshPublicKey=${INPUT_SSH_PUBLIC_KEY}
+  fi
+
+  sshPrivateKey=""
+  if [ "${INPUT_SSH_PRIVATE_KEY}" != "" ]; then
+    sshPrivateKey=${INPUT_SSH_PRIVATE_KEY}
+  fi
+
+  sshConfig=""
+  if [ "${INPUT_SSH_CONFIG}" != "" ]; then
+    sshConfig=${INPUT_SSH_CONFIG}
+  fi
+}
+
+function configureSSH {
+  if [[ "${sshPublicKey}" != "" ]] && [[ "${sshPrivateKey}" != "" ]]; then
+    mkdir -p /root/.ssh/
+
+    install -m 600 /dev/null /root/.ssh/id_rsa
+    echo "${sshPrivateKey}" > /root/.ssh/id_rsa
+
+    install -m 600 /dev/null /root/.ssh/id_rsa.pub
+    echo "${sshPublicKey}" > /root/.ssh/id_rsa.pub
+
+    install -m 600 /dev/null /root/.ssh/known_hosts
+
+    install -m 600 /dev/null /root/.ssh/config
+    echo "${sshConfig}" > /root/.ssh/config
+  fi
 }
 
 function configureCLICredentials {
@@ -105,6 +137,7 @@ function main {
 
   parseInputs
   configureCLICredentials
+  configureSSH
   cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
 
   case "${tfSubcommand}" in

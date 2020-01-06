@@ -22,6 +22,12 @@ inputs:
   tf_actions_working_dir:
     description: 'Terraform working directory.'
     default: '.'
+  ssh_public_key:
+    description: 'SSH Public Key to store in /root/.ssh'
+  ssh_private_key:
+    description: 'SSH Private Key to store in /root/.ssh'
+  ssh_config:
+    description: 'SSH Config to store in /root/.ssh'
 outputs:
   tf_actions_output:
     description: 'The Terraform outputs in JSON format.'
